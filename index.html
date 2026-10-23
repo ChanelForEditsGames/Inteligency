@@ -1,0 +1,515 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Inteligency</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #071018;
+    color: #e9fbff;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+
+#camera {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+#shade {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(3,12,20,.25),
+        rgba(3,12,20,.65)
+    );
+    z-index: 1;
+    pointer-events: none;
+}
+
+#header {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.brand {
+    font-size: 19px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 0 0 12px #00d9ff;
+}
+
+.status {
+    color: #7eeeff;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+button, a {
+    color: #e9fbff;
+    font: inherit;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button {
+    background: rgba(12,35,49,.88);
+    border: 1px solid rgba(75,220,255,.55);
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+}
+
+button:focus,
+button.hovered,
+a.hovered {
+    outline: 2px solid #7af2ff;
+    background: rgba(0,150,190,.85);
+    box-shadow: 0 0 18px #00bfe8;
+}
+
+#start {
+    background: #007f9e;
+    font-weight: bold;
+}
+
+#sidebar {
+    position: fixed;
+    top: 82px;
+    bottom: 16px;
+    right: 10px;
+    width: 142px;
+    padding: 10px;
+    z-index: 3;
+    overflow-y: auto;
+    border: 1px solid rgba(90,225,255,.5);
+    border-radius: 20px;
+    background: rgba(5,18,29,.82);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 25px rgba(0,190,255,.12);
+}
+
+#sidebar h3 {
+    margin: 5px 0 12px;
+    font-size: 14px;
+    color: #82efff;
+}
+
+.app {
+    display: block;
+    padding: 11px 5px;
+    margin-bottom: 8px;
+    text-align: center;
+    font-size: 12px;
+    border: 1px solid #31586a;
+    border-radius: 12px;
+    background: rgba(19,43,57,.8);
+}
+
+.app span {
+    display: block;
+    font-size: 21px;
+    margin-bottom: 5px;
+}
+
+#main {
+    position: fixed;
+    left: 12px;
+    bottom: 18px;
+    width: min(59%, 310px);
+    z-index: 3;
+    padding: 14px;
+    border: 1px solid rgba(83,221,255,.6);
+    border-radius: 18px;
+    background: rgba(5,18,29,.84);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 0 25px rgba(0,190,255,.12);
+}
+
+#main h3 {
+    margin: 0 0 8px;
+    color: #8aefff;
+    font-size: 15px;
+}
+
+#main p {
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+}
+
+.actions button {
+    font-size: 11px;
+    padding: 11px 4px;
+}
+
+#cursor {
+    display: none;
+    position: fixed;
+    width: 23px;
+    height: 23px;
+    border: 2px solid white;
+    border-radius: 50%;
+    background: rgba(0,210,255,.35);
+    box-shadow: 0 0 16px #00d9ff;
+    pointer-events: none;
+    transform: translate(-50%,-50%);
+    z-index: 20;
+}
+
+#cursor.pinch {
+    background: #55ffad;
+    box-shadow: 0 0 22px #55ffad;
+}
+
+#confirm {
+    position: fixed;
+    display: none;
+    z-index: 10;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: min(90%, 330px);
+    padding: 20px;
+    border: 1px solid #79eaff;
+    border-radius: 20px;
+    background: rgba(4,16,27,.97);
+    box-shadow: 0 0 40px #007e9c;
+}
+
+#confirm h2 {
+    font-size: 19px;
+}
+
+#confirm p {
+    color: #c1e5ee;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#confirm .actions {
+    margin-top: 15px;
+}
+
+#confirm .danger {
+    background: #862b3a;
+    border-color: #ff8795;
+}
+
+#confirm .safe {
+    background: #14566b;
+}
+
+#footer {
+    position: fixed;
+    top: 63px;
+    left: 12px;
+    z-index: 4;
+    max-width: 58%;
+    font-size: 10px;
+    color: #c5f6ff;
+}
+
+@media (max-width: 370px) {
+    #sidebar {
+        width: 116px;
+        right: 6px;
+        padding: 7px;
+    }
+
+    #main {
+        left: 7px;
+        width: calc(100% - 136px);
+        padding: 9px;
+    }
+
+    .brand {
+        font-size: 16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<video id="camera" autoplay muted playsinline></video>
+<div id="shade"></div>
+
+<header id="header">
+    <div>
+        <div class="brand">◈ INTELIGENCY</div>
+        <div id="status" class="status">Cámara desactivada</div>
+    </div>
+
+    <button id="start">Activar cámara</button>
+</header>
+
+<div id="footer">
+    Apuntá con el índice · Juntá índice y pulgar para seleccionar
+</div>
+
+<aside id="sidebar">
+    <h3>APLICACIONES</h3>
+
+    <a class="app" href="https://www.google.com/">
+        <span>🔎</span>Google
+    </a>
+
+    <a class="app" href="https://www.youtube.com/">
+        <span>▶️</span>YouTube
+    </a>
+
+    <a class="app" href="https://maps.google.com/">
+        <span>🗺️</span>Maps
+    </a>
+
+    <a class="app" href="https://mail.google.com/">
+        <span>✉️</span>Gmail
+    </a>
+
+    <a class="app" href="https://chatgpt.com/">
+        <span>◉</span>ChatGPT
+    </a>
+
+    <a class="app" href="https://github.com/">
+        <span>⌘</span>GitHub
+    </a>
+
+    <a class="app" href="https://www.roblox.com/">
+        <span>⬡</span>Roblox
+    </a>
+
+    <a class="app" href="https://www.wikipedia.org/">
+        <span>📚</span>Wikipedia
+    </a>
+</aside>
+
+<section id="main">
+    <h3 id="panelTitle">Asistente inteligente</h3>
+
+    <p id="message">
+        Esperando una acción. Esta versión todavía no analiza
+        automáticamente el texto de la cámara.
+    </p>
+
+    <div class="actions">
+        <button id="summary">Resumir</button>
+        <button id="answer">Sugerir respuesta</button>
+        <button id="cancel">Cancelar</button>
+        <button id="hide">Ocultar panel</button>
+    </div>
+</section>
+
+<div id="confirm">
+    <h2>¿Deseás cancelar?</h2>
+    <p>
+        Confirmá tu decisión. Si volvés, la acción pendiente
+        no se cancelará.
+    </p>
+
+    <div class="actions">
+        <button class="danger" id="yesCancel">
+            Sí, cancelar
+        </button>
+
+        <button class="safe" id="noCancel">
+            No, volver
+        </button>
+    </div>
+</div>
+
+<div id="cursor"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+<script>
+const video = document.getElementById("camera");
+const statusText = document.getElementById("status");
+const cursor = document.getElementById("cursor");
+const confirmBox = document.getElementById("confirm");
+const message = document.getElementById("message");
+
+let camera = null;
+let hands = null;
+let running = false;
+let pinching = false;
+let previousTarget = null;
+let pendingAction = null;
+
+function showMessage(title, text) {
+    document.getElementById("panelTitle").textContent = title;
+    message.textContent = text;
+}
+
+document.getElementById("summary").onclick = () => {
+    pendingAction = "summary";
+    showMessage(
+        "Resumen",
+        "Para resumir, primero necesitamos conectar el reconocimiento de texto y una IA."
+    );
+};
+
+document.getElementById("answer").onclick = () => {
+    pendingAction = "answer";
+    showMessage(
+        "Respuesta sugerida",
+        "Para generar una respuesta necesitamos proporcionar el texto detectado a una IA."
+    );
+};
+
+document.getElementById("cancel").onclick = () => {
+    confirmBox.style.display = "block";
+};
+
+document.getElementById("yesCancel").onclick = () => {
+    pendingAction = null;
+    confirmBox.style.display = "none";
+    showMessage("Acción cancelada", "No se ejecutó la acción pendiente.");
+};
+
+document.getElementById("noCancel").onclick = () => {
+    confirmBox.style.display = "none";
+    showMessage("Acción conservada", "La acción pendiente sigue sin ejecutarse.");
+};
+
+document.getElementById("hide").onclick = () => {
+    document.getElementById("main").style.display = "none";
+};
+
+async function startCamera() {
+    if (running) return;
+
+    try {
+        statusText.textContent = "Solicitando permiso...";
+
+        hands = new Hands({
+            locateFile: file =>
+                "https://cdn.jsdelivr.net/npm/@mediapipe/hands/" + file
+        });
+
+        hands.setOptions({
+            maxNumHands: 1,
+            modelComplexity: 0,
+            minDetectionConfidence: 0.65,
+            minTrackingConfidence: 0.6
+        });
+
+        hands.onResults(onResults);
+
+        camera = new Camera(video, {
+            onFrame: async () => {
+                if (running) {
+                    await hands.send({ image: video });
+                }
+            },
+            width: 640,
+            height: 480
+        });
+
+        await camera.start();
+        running = true;
+
+        cursor.style.display = "block";
+        statusText.textContent = "Cámara activa · Buscando mano";
+
+    } catch (error) {
+        statusText.textContent = "No se pudo activar la cámara";
+        message.textContent =
+            "Permití el acceso a la cámara y abrí esta página desde HTTPS. " +
+            "También necesitás conexión a Internet para cargar el detector.";
+        console.error(error);
+    }
+}
+
+function onResults(results) {
+    if (!running) return;
+
+    const landmarks =
+        results.multiHandLandmarks &&
+        results.multiHandLandmarks[0];
+
+    if (!landmarks) {
+        cursor.style.display = "none";
+        document.querySelectorAll(".hovered").forEach(el =>
+            el.classList.remove("hovered")
+        );
+        previousTarget = null;
+        pinching = false;
+        statusText.textContent = "Cámara activa · Mano no detectada";
+        return;
+    }
+
+    const index = landmarks[8];
+    const thumb = landmarks[4];
+
+    // La cámara está reflejada horizontalmente.
+    const x = (1 - index.x) * window.innerWidth;
+    const y = index.y * window.innerHeight;
+
+    cursor.style.display = "block";
+    cursor.style.left = x + "px";
+    cursor.style.top = y + "px";
+
+    const distance = Math.hypot(
+        index.x - thumb.x,
+        index.y - thumb.y
+    );
+
+    const isPinching = distance < 0.055;
+
+    cursor.classList.toggle("pinch", isPinching);
+
+    const element = document.elementFromPoint(x, y);
+    const target = element && element.closest("button, a");
+
+    document.querySelectorAll(".hovered").forEach(el =>
+        el.classList.remove("hovered")
+    );
+
+    if (target) target.classList.add("hovered");
+
+    statusText.textContent = isPinching
+        ? "Gesto de selección"
+        : "Mano detectada · Apuntá y juntá los dedos";
+
+    // Activa solamente al comenzar un gesto de pellizco.
+    if (isPinching && !pinching && target) {
+        target.click();
+    }
+
+    pinching = isPinching;
+    previousTarget = target;
+}
+
+document.getElementById("start").onclick = startCamera;
+</script>
+
+</body>
+      </html>
+      
